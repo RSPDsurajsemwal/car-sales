@@ -1,0 +1,553 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarSales - Buy & Sell Cars</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.9);
+            padding: 1rem 0;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        .nav li {
+            margin: 0 2rem;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover, .nav a.active {
+            color: #ffd700;
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 120px 20px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .hero {
+            text-align: center;
+            color: white;
+            padding: 4rem 0;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #ffd700;
+            color: #333;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .car-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .car-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .car-image {
+            height: 200px;
+            background: linear-gradient(45deg, #ddd, #eee);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #666;
+        }
+
+        .car-info {
+            padding: 1.5rem;
+        }
+
+        .car-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .car-price {
+            font-size: 1.8rem;
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .car-details {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .car-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .feature {
+            background: #3498db;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .form-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 3rem;
+            max-width: 600px;
+            margin: 2rem auto;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .cars-sold {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .stat {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .nav ul {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav li {
+                margin: 0.5rem 0;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <ul>
+            <li><a href="#" data-page="home" class="nav-link active">Home</a></li>
+            <li><a href="#" data-page="buy" class="nav-link">Buy Cars</a></li>
+            <li><a href="#" data-page="sell" class="nav-link">Sell Car</a></li>
+        </ul>
+    </nav>
+
+    <!-- Home Page -->
+    <section id="home" class="page active">
+        <div class="hero">
+            <h1>🚗 CarSales</h1>
+            <p>Your one-stop shop to buy and sell amazing cars!</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="total-cars">12</div>
+                    <div>Cars Available</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="cars-sold">47</div>
+                    <div>Cars Sold</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="total-users">128</div>
+                    <div>Happy Users</div>
+                </div>
+            </div>
+        </div>
+        <div class="cars-sold">
+            <h2>Recently Sold Cars</h2>
+            <div id="recent-sales" class="car-grid">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Buy Cars Page -->
+    <section id="buy" class="page">
+        <div class="form-container">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">🏪 Available Cars for Sale</h2>
+            <div class="car-grid" id="car-list">
+                <!-- Dynamic car listings -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Sell Car Page -->
+    <section id="sell" class="page">
+        <div class="form-container">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">📤 List Your Car for Sale</h2>
+            <form id="sell-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Make</label>
+                        <input type="text" id="make" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Model</label>
+                        <input type="text" id="model" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="number" id="year" min="1900" max="2025" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mileage (km)</label>
+                        <input type="number" id="mileage" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price ($)</label>
+                        <input type="number" id="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fuel Type</label>
+                        <select id="fuel" required>
+                            <option value="">Select Fuel</option>
+                            <option value="Petrol">Petrol</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="Electric">Electric</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="4" placeholder="Tell us about your car..."></textarea>
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn">🚀 List My Car</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+            <h2 id="modal-title">Success!</h2>
+            <p id="modal-message"></p>
+            <button class="btn" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // Sample cars data
+        let cars = [
+            { id: 1, make: 'Toyota', model: 'Camry', year: 2022, mileage: 25000, price: 28500, fuel: 'Hybrid', description: 'Excellent condition hybrid sedan', image: '🚗' },
+            { id: 2, make: 'Honda', model: 'Civic', year: 2023, mileage: 12000, price: 24800, fuel: 'Petrol', description: 'Sporty and reliable', image: '🏎️' },
+            { id: 3, make: 'Tesla', model: 'Model 3', year: 2024, mileage: 5000, price: 45000, fuel: 'Electric', description: 'Brand new electric sedan', image: '⚡' },
+            { id: 4, make: 'Ford', model: 'F-150', year: 2021, mileage: 35000, price: 38500, fuel: 'Petrol', description: 'Powerful pickup truck', image: '🚚' },
+            { id: 5, make: 'BMW', model: 'X5', year: 2020, mileage: 42000, price: 52000, fuel: 'Diesel', description: 'Luxury SUV with premium features', image: '🚙' },
+            { id: 6, make: 'Audi', model: 'A4', year: 2022, mileage: 18000, price: 41000, fuel: 'Petrol', description: 'Premium sedan with quattro', image: '🚘' }
+        ];
+
+        let soldCars = [];
+        let nextId = 7;
+        let carsSoldCount = 47;
+        let totalUsers = 128;
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = e.target.dataset.page;
+                switchPage(page);
+            });
+        });
+
+        function switchPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            // Remove active nav links
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+            
+            // Update content based on page
+            if (pageId === 'home') updateHomePage();
+            if (pageId === 'buy') renderCars();
+        }
+
+        // Render cars for buy page
+        function renderCars() {
+            const carList = document.getElementById('car-list');
+            carList.innerHTML = cars.map(car => `
+                <div class="car-card" onclick="buyCar(${car.id})">
+                    <div class="car-image">${car.image}</div>
+                    <div class="car-info">
+                        <div class="car-title">${car.make} ${car.model}</div>
+                        <div class="car-price">$${car.price.toLocaleString()}</div>
+                        <div class="car-details">${car.year} • ${car.mileage.toLocaleString()}km • ${car.fuel}</div>
+                        <p>${car.description}</p>
+                        <div class="car-features">
+                            <span class="feature">Low Mileage</span>
+                            <span class="feature">${car.fuel}</span>
+                            <span class="feature">Ready to Drive</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Buy car function
+        function buyCar(carId) {
+            const car = cars.find(c => c.id === carId);
+            if (car) {
+                cars = cars.filter(c => c.id !== carId);
+                soldCars.unshift(car);
+                carsSoldCount++;
+                showModal('Car Purchased!', `Congratulations! You bought ${car.make} ${car.model} for $${car.price.toLocaleString()}!`);
+                updateHomePage();
+                renderCars();
+            }
+        }
+
+        // Update home page stats and recent sales
+        function updateHomePage() {
+            document.getElementById('total-cars').textContent = cars.length;
+            document.getElementById('cars-sold').textContent = carsSoldCount;
+            
+            const recentSalesEl = document.getElementById('recent-sales');
+            const recent = soldCars.slice(0, 3).map(car => `
+                <div class="car-card" style="grid-column: span 1;">
+                    <div class="car-image">${car.image}</div>
+                    <div class="car-info">
+                        <div class="car-title">${car.make} ${car.model}</div>
+                        <div class="car-price">$${car.price.toLocaleString()}</div>
+                        <div style="color: green; font-weight: bold;">SOLD!</div>
+                    </div>
+                </div>
+            `).join('');
+            recentSalesEl.innerHTML = recent || '<p style="grid-column: 1/-1; text-align: center; color: #666;">No recent sales</p>';
+        }
+
+        // Sell form
+        document.getElementById('sell-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = {
+                id: nextId++,
+                make: document.getElementById('make').value,
+                model: document.getElementById('model').value,
+                year: parseInt(document.getElementById('year').value),
+                mileage: parseInt(document.getElementById('mileage').value),
+                price: parseInt(document.getElementById('price').value),
+                fuel: document.getElementById('fuel').value,
+                description: document.getElementById('description').value || 'Great condition!',
+                image: '🚗'
+            };
+            
+            cars.push(formData);
+            totalUsers++;
+            document.getElementById('sell-form').reset();
+            showModal('Car Listed!', `Your ${formData.make} ${formData.model} is now listed for sale at $${formData.price.toLocaleString()}!`);
+            updateHomePage();
+        });
+
+        // Modal functions
+        function showModal(title, message) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            document.getElementById('success-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('success-modal').style.display = 'none';
+        }
+
+        document.querySelector('.close').addEventListener('click', closeModal);
+
+        // Close modal on outside click
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('success-modal');
+            if (e.target === modal) closeModal();
+        });
+
+        // Initialize
+        updateHomePage();
+        renderCars();
+    </script>
+</body>
+</html>
+
